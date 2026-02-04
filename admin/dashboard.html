@@ -7,28 +7,47 @@
   <link rel="stylesheet" href="../css/style.css">
 </head>
 <body>
-  <div id="adminRoot">Loading...</div>
+  <h2>Admin Dashboard</h2>
+  <nav>
+    <a href="dashboard.html">Home</a> |
+    <a href="products.html">Products</a> |
+    <a href="orders.html">Orders</a> |
+    <a href="analytics.html">Analytics</a> |
+    <a href="manage-admins.html">Manage Admins</a> |
+    <a href="#" id="logout">Logout</a>
+  </nav>
+
+  <section id="addProductSection">
+    <h3>➕ Add Product</h3>
+    <input id="pname" placeholder="Product Name">
+    <input id="price" type="number" placeholder="Price">
+    <input id="category" placeholder="Category">
+    <input id="stock" type="number" placeholder="Stock Quantity">
+    <input id="imageFile" type="file" accept="image/*">
+    <button onclick="addProduct()">Add Product</button>
+  </section>
+
+  <hr>
+
+  <h3>✏️ Edit/Delete Products</h3>
+  <div id="productList"></div>
 
   <script type="module">
-    import { checkRole } from "../admin-js/auth.js";
+    import { checkAdminAccess } from "../admin-js/auth.js";
     import { auth } from "../js/firebase.js";
 
     (async () => {
-      const role = await checkRole();
-      document.getElementById('adminRoot').innerHTML = `
-        <h2>Admin Dashboard (${role})</h2>
-        <nav>
-          <a href="dashboard.html">Home</a> |
-          <a href="products.html">Products</a> |
-          <a href="orders.html">Orders</a> |
-          <a href="analytics.html">Analytics</a> |
-          <a href="manage-admins.html">Manage Admins</a> |
-          <a href="#" id="logout">Logout</a>
-        </nav>
-        <div id="content">Welcome back</div>
-      `;
-      document.getElementById('logout').addEventListener('click', () => auth.signOut());
+      const role = await checkAdminAccess();
+      // only owner/manager can add products
+      if (role === 'support') {
+        const section = document.getElementById('addProductSection');
+        if (section) section.remove();
+      }
     })();
+
+    document.getElementById('logout').addEventListener('click', () => auth.signOut());
   </script>
+
+  <script type="module" src="../admin-js/admin-products.js"></script>
 </body>
 </html> 

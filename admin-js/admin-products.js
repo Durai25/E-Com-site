@@ -5,13 +5,13 @@ import {
 import {
   getStorage, ref as storageRef, uploadBytes, getDownloadURL, deleteObject
 } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-storage.js";
-import { checkRole } from "./auth.js";
+import { checkAdminAccess } from "./auth.js";
 
 const storage = getStorage();
 const productsRef = collection(db, "products");
 
 (async () => {
-  const role = await checkRole();
+  const role = await checkAdminAccess();
   if (!role) return; // redirected
 
   // only owner/manager can add products
