@@ -51,3 +51,10 @@
   <script type="module" src="../admin-js/admin-products.js"></script>
 </body>
 </html> 
+<script type="module">
+import { checkAdminAccess } from "../admin-js/auth.js";
+
+checkAdminAccess()
+  .then(role => console.log("Admin role:", role))
+  .catch(() => location.href="login.html");
+</script>

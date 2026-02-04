@@ -1,33 +1,29 @@
-<h2>Admin Login</h2>
-<input id="email" placeholder="Email">
-<input id="password" type="password" placeholder="Password">
-<button onclick="login()">Login</button>
-<a href="#" onclick="forgotPassword()">Forgot Password?</a>
-
 <script type="module">
 import { auth } from "../js/firebase.js";
-import { signInWithEmailAndPassword, sendPasswordResetEmail } from
-"https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
+import {
+  signInWithEmailAndPassword,
+  sendPasswordResetEmail
+} from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
 
-function login() {
+window.login = function () {
   signInWithEmailAndPassword(auth,
-    email.value, password.value)
-  .then(() => location.href="dashboard.html")
+    email.value,
+    password.value
+  )
+  .then(() => {
+    location.href = "dashboard.html";
+  })
   .catch(err => alert(err.message));
-}
+};
 
-function forgotPassword() {
-  const email = document.getElementById('email').value.trim();
-  if (!email) {
-    alert('Please enter your email address first.');
+window.forgotPassword = function () {
+  const emailVal = email.value.trim();
+  if (!emailVal) {
+    alert("Enter email first");
     return;
   }
-  sendPasswordResetEmail(auth, email)
-    .then(() => alert('Password reset email sent. Check your inbox.'))
-    .catch(err => alert('Error: ' + err.message));
-}
-
-// expose to global scope so inline onclick can call it
-window.login = login;
-window.forgotPassword = forgotPassword;
+  sendPasswordResetEmail(auth, emailVal)
+    .then(() => alert("Reset email sent"))
+    .catch(err => alert(err.message));
+};
 </script>

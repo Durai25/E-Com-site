@@ -1,0 +1,24 @@
+<h2>My Account</h2>
+<a href="my-orders.html">My Orders</a>
+
+<script type="module">
+import { auth } from "../js/firebase.js";
+auth.onAuthStateChanged(u=>{
+  if(!u) location.href="login.html";
+});
+</script>
+<script type="module">
+import { auth } from "../js/firebase.js";
+
+auth.onAuthStateChanged(user => {
+  if (!user) {
+    location.href = "login.html";
+    return;
+  }
+
+  if (!user.emailVerified) {
+    alert("Please verify your email first.");
+    location.href = "login.html";
+  }
+});
+</script>
