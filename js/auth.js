@@ -22,14 +22,37 @@ window.login = async function () {
     const cred = await signInWithEmailAndPassword(auth, email, password);
     const user = cred.user;
 
-    // 🔐 Email verification check (CUSTOMERS ONLY)
+    // 🔑 STEP 1: ADMIN CHECK FIRST
+    const adminRef = doc(db, "admins", user.email.toLowerCase());
+    const adminSnap = await getDoc(adminRef);
+
+    if (adminSnap.exists()) {
+      // ✅ ADMIN → DIRECT ACCESS
+      window.location = "/admin/dashboard.html";
+      return;
+    }
+
+    // 👤 STEP 2: CUSTOMER → EMAIL VERIFICATION REQUIRED
     if (!user.emailVerified) {
       document.getElementById("msg").innerText =
         "Please verify your email before login.";
       return;
     }
 
-    redirectUser(user);
+    // STEP 3: CUSTOMER ACCOUNT
+    const userRef = doc(db, "users", user.uid);
+    const userSnap = await getDoc(userRef);
+
+    if (!userSnap.exists()) {
+      await setDoc(userRef, {
+        email: user.email,
+        role: "customer",
+        emailVerified: true,
+        createdAt: new Date()
+      });
+    }
+
+    window.location = "/public/my-account.html";
 
   } catch (err) {
     document.getElementById("msg").innerText = err.message;
