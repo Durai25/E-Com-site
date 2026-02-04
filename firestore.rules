@@ -25,11 +25,10 @@ service cloud.firestore {
       allow read, update: if request.auth != null && isAdmin(request.auth.token.email);
     }
 
-    // Admins: owner-only writes, admins can read
+    // Admins: owner can write, authenticated users can read their own doc
     match /admins/{adminId} {
-      allow read: if request.auth != null && isAdmin(request.auth.token.email);
-      // WRITE is restricted to Owner - replace thangaduraipazhani@gmail.com with real owner email
-      allow write: if request.auth != null && request.auth.token.email == 'thangaduraipazhani@gmail.com';
+      allow read: if request.auth != null && request.auth.token.email == adminId;
+      allow write: if request.auth != null && request.auth.token.email == 'thangaduuraipazhani@gmail.com';
     }
 
     // Default: deny
