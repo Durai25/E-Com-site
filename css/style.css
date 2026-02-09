@@ -456,3 +456,9 @@ ul{padding-left:18px}
   background: linear-gradient(135deg, #d93025, #ea4335);
 }
 
+.cart-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 10px;
+}
