@@ -462,3 +462,7 @@ ul{padding-left:18px}
   gap: 10px;
   margin-bottom: 10px;
 }
+.logo-img {
+  height: 60px;
+  width: auto;
+}
