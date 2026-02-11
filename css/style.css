@@ -462,7 +462,29 @@ ul{padding-left:18px}
   gap: 10px;
   margin-bottom: 10px;
 }
+/* LOGO AREA */
+.logo-link {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+  text-decoration: none;
+}
+
 .logo-img {
   height: 60px;
   width: auto;
+}
+
+/* BRAND TEXT */
+.brand-text {
+  display: flex;
+  flex-direction: column;
+}
+
+
+.brand-tagline {
+  font-size: 15px;
+  color: #151307;
+  letter-spacing: 2px;
+  text-transform: uppercase;
 }
