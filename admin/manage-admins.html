@@ -5,6 +5,195 @@
   <meta name="viewport" content="width=device-width,initial-scale=1">
   <title>Manage Admins</title>
   <link rel="stylesheet" href="../css/style.css">
+  <style>
+    .admin-layout {
+      display: flex;
+      gap: 24px;
+      margin-top: 20px;
+    }
+    
+    .admin-form-panel {
+      flex: 0 0 380px;
+      background: #fff;
+      padding: 24px;
+      border-radius: 12px;
+      box-shadow: var(--shadow);
+      height: fit-content;
+      position: sticky;
+      top: 20px;
+    }
+    
+    .admin-form-panel h3 {
+      margin-top: 0;
+      color: var(--accent);
+      margin-bottom: 20px;
+    }
+    
+    .admin-form-panel .form-group {
+      margin-bottom: 16px;
+    }
+    
+    .admin-form-panel label {
+      display: block;
+      font-weight: 600;
+      font-size: 13px;
+      color: #374151;
+      margin-bottom: 6px;
+    }
+    
+    .admin-form-panel input,
+    .admin-form-panel select {
+      width: 100%;
+      padding: 10px 12px;
+      border: 1px solid #d1d5db;
+      border-radius: 8px;
+      font-size: 14px;
+      transition: all 0.3s;
+    }
+    
+    .admin-form-panel input:focus,
+    .admin-form-panel select:focus {
+      outline: none;
+      border-color: var(--accent);
+      box-shadow: 0 0 0 3px rgba(139, 29, 29, 0.1);
+    }
+    
+    .admin-form-panel button {
+      width: 100%;
+      padding: 12px;
+      font-size: 15px;
+      margin-top: 8px;
+    }
+    
+    .admin-list-panel {
+      flex: 1;
+      background: #fff;
+      padding: 20px;
+      border-radius: 12px;
+      box-shadow: var(--shadow);
+    }
+    
+    .admin-list-panel h3 {
+      margin-top: 0;
+      color: var(--accent);
+      margin-bottom: 16px;
+    }
+    
+    .admin-item {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      padding: 12px;
+      border: 1px solid #e5e7eb;
+      border-radius: 8px;
+      margin-bottom: 10px;
+      transition: all 0.2s;
+    }
+    
+    .admin-item:hover {
+      border-color: var(--accent);
+      background: rgba(139, 29, 29, 0.03);
+    }
+    
+    .admin-item.selected {
+      border-color: var(--accent);
+      background: rgba(139, 29, 29, 0.08);
+    }
+    
+    .admin-avatar {
+      width: 48px;
+      height: 48px;
+      background: var(--accent);
+      color: #fff;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 20px;
+      font-weight: 600;
+    }
+    
+    .admin-info {
+      flex: 1;
+    }
+    
+    .admin-info .email {
+      font-weight: 600;
+      color: #111827;
+      font-size: 14px;
+    }
+    
+    .admin-info .role {
+      font-size: 12px;
+      color: #6b7280;
+      margin-top: 4px;
+    }
+    
+    .admin-info .role-badge {
+      display: inline-block;
+      padding: 2px 10px;
+      border-radius: 12px;
+      font-size: 11px;
+      font-weight: 600;
+      text-transform: uppercase;
+    }
+    
+    .role-badge.owner {
+      background: #fef3c7;
+      color: #92400e;
+    }
+    
+    .role-badge.manager {
+      background: #dbeafe;
+      color: #1e40af;
+    }
+    
+    .role-badge.support {
+      background: #d1fae5;
+      color: #065f46;
+    }
+    
+    .admin-actions {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+    
+    .admin-actions button {
+      padding: 6px 12px;
+      font-size: 12px;
+    }
+    
+    .admin-actions .delete-btn {
+      background: #dc2626;
+    }
+    
+    .admin-actions .delete-btn:hover {
+      background: #b91c1c;
+    }
+    
+    .empty-state {
+      text-align: center;
+      padding: 40px;
+      color: #6b7280;
+    }
+    
+    .empty-state .icon {
+      font-size: 48px;
+      margin-bottom: 12px;
+    }
+    
+    @media (max-width: 900px) {
+      .admin-layout {
+        flex-direction: column;
+      }
+      
+      .admin-form-panel {
+        flex: none;
+        position: static;
+      }
+    }
+  </style>
 </head>
 <body>
   <h2>Manage Admins</h2>
@@ -18,14 +207,37 @@
     <a href="customer-orders.html">Customer Orders</a> |
     <a href="/public/index.html" id="logout">Logout</a>
   </nav>
-  <input id="email" placeholder="Admin Email">
-  <select id="role">
-    <option value="owner">Owner</option>
-    <option value="manager">Manager</option>
-    <option value="support">Support</option>
-  </select>
-  <button onclick="addAdmin()">Add Admin</button>
+  
+<div class="admin-layout">
+    <!-- Left Panel: Add/Edit Admin Form -->
+    <div class="admin-form-panel">
+      <h3 id="formTitle">➕ Add Admin</h3>
+      <input type="hidden" id="editEmail" value="">
+      
+      <div class="form-group">
+        <label for="email">Email Address</label>
+        <input id="email" placeholder="Enter admin email">
+      </div>
+      
+      <div class="form-group">
+        <label for="role">Role</label>
+        <select id="role">
+          <option value="owner">Owner</option>
+          <option value="manager">Manager</option>
+          <option value="support">Support</option>
+        </select>
+      </div>
+      
+      <button onclick="saveAdmin()" id="saveBtn">Add Admin</button>
+      <button onclick="clearForm()" class="secondary" style="margin-top: 8px;">Clear Form</button>
+    </div>
+    
+    <!-- Right Panel: Admin List -->
+    <div class="admin-list-panel">
+      <h3>👥 Admin List</h3>
+      <div id="adminList"></div>
+  </div>
 
   <script type="module" src="../admin-js/manage-admins.js"></script>
 </body>
-</html> 
+</html>

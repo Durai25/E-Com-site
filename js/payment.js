@@ -1,4 +1,4 @@
-import { db } from "./firebase.js";
+import { db, auth } from "./firebase.js";
 import { addDoc, collection, writeBatch, doc, getDoc } from
 "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 
@@ -26,6 +26,10 @@ window.payNow = async function(){
     const total = cart.reduce((s,p)=>s + Number(p.price || 0), 0);
     const amountPaise = total * 100;
 
+    // Get current user ID if logged in
+    const user = auth.currentUser;
+    const userId = user ? user.uid : null;
+
     const options = {
       key: "rzp_test_SBtcUas4MDwqRo", // TODO: Replace with production key for live mode
       amount: amountPaise,
@@ -47,7 +51,8 @@ window.payNow = async function(){
             paymentId: res.razorpay_payment_id,
             paymentStatus: 'Paid',
             orderStatus: 'Pending',
-            createdAt: new Date()
+            createdAt: new Date(),
+            userId: userId // Save userId for order history
           };
 
           // Save order and reduce stock in atomic transaction

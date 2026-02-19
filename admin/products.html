@@ -5,6 +5,184 @@
   <meta name="viewport" content="width=device-width,initial-scale=1">
   <title>Admin - Products</title>
   <link rel="stylesheet" href="../css/style.css">
+  <style>
+    .admin-products-layout {
+      display: flex;
+      gap: 24px;
+      margin-top: 20px;
+    }
+    
+    .product-form-panel {
+      flex: 0 0 380px;
+      background: #fff;
+      padding: 24px;
+      border-radius: 12px;
+      box-shadow: var(--shadow);
+      height: fit-content;
+      position: sticky;
+      top: 20px;
+    }
+    
+    .product-form-panel h3 {
+      margin-top: 0;
+      color: var(--accent);
+      margin-bottom: 20px;
+    }
+    
+    .product-form-panel .form-group {
+      margin-bottom: 16px;
+    }
+    
+    .product-form-panel label {
+      display: block;
+      font-weight: 600;
+      font-size: 13px;
+      color: #374151;
+      margin-bottom: 6px;
+    }
+    
+    .product-form-panel input,
+    .product-form-panel select {
+      width: 100%;
+      padding: 10px 12px;
+      border: 1px solid #d1d5db;
+      border-radius: 8px;
+      font-size: 14px;
+      transition: all 0.3s;
+    }
+    
+    .product-form-panel input:focus,
+    .product-form-panel select:focus {
+      outline: none;
+      border-color: var(--accent);
+      box-shadow: 0 0 0 3px rgba(139, 29, 29, 0.1);
+    }
+    
+    .product-form-panel button {
+      width: 100%;
+      padding: 12px;
+      font-size: 15px;
+      margin-top: 8px;
+    }
+    
+    .product-form-panel .divider {
+      text-align: center;
+      margin: 16px 0;
+      color: #9ca3af;
+      font-size: 13px;
+    }
+    
+    .product-list-panel {
+      flex: 1;
+      background: #fff;
+      padding: 20px;
+      border-radius: 12px;
+      box-shadow: var(--shadow);
+    }
+    
+    .product-list-panel h3 {
+      margin-top: 0;
+      color: var(--accent);
+      margin-bottom: 16px;
+    }
+    
+    .product-item {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      padding: 12px;
+      border: 1px solid #e5e7eb;
+      border-radius: 8px;
+      margin-bottom: 10px;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+    
+    .product-item:hover {
+      border-color: var(--accent);
+      background: rgba(139, 29, 29, 0.03);
+    }
+    
+    .product-item.selected {
+      border-color: var(--accent);
+      background: rgba(139, 29, 29, 0.08);
+    }
+    
+    .product-item img {
+      width: 60px;
+      height: 60px;
+      object-fit: cover;
+      border-radius: 6px;
+      background: #f3f4f6;
+    }
+    
+    .product-item-info {
+      flex: 1;
+    }
+    
+    .product-item-info h4 {
+      margin: 0 0 4px 0;
+      font-size: 15px;
+      color: #111827;
+    }
+    
+    .product-item-info .price {
+      font-weight: 700;
+      color: var(--accent);
+      font-size: 14px;
+    }
+    
+    .product-item-info .category {
+      font-size: 12px;
+      color: #6b7280;
+      background: #f3f4f6;
+      padding: 2px 8px;
+      border-radius: 4px;
+      display: inline-block;
+      margin-top: 4px;
+    }
+    
+    .product-item-actions {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+    
+    .product-item-actions button {
+      padding: 6px 12px;
+      font-size: 12px;
+    }
+    
+    .product-item-actions .delete-btn {
+      background: #dc2626;
+    }
+    
+    .product-item-actions .delete-btn:hover {
+      background: #b91c1c;
+    }
+    
+    .empty-state {
+      text-align: center;
+      padding: 40px;
+      color: #6b7280;
+    }
+    
+    .empty-state .icon {
+      font-size: 48px;
+      margin-bottom: 12px;
+    }
+    
+    @media (max-width: 900px) {
+      .admin-products-layout {
+        flex-direction: column;
+      }
+      
+      .product-form-panel {
+        flex: none;
+        position: static;
+      }
+    }
+  </style>
 </head>
 <body>
   <h2>Products</h2>
@@ -19,31 +197,71 @@
     <a href="/public/index.html" id="logout">Logout</a>
   </nav>
   
-  <section id="addProductSection">
-    <h3>➕ Add Product</h3>
-    <input id="pname" placeholder="Product Name">
-    <input id="price" type="number" placeholder="Price">
-    <input id="category" placeholder="Category">
-    <input id="stock" type="number" placeholder="Stock Quantity">
-    <input id="imageFile" type="file" accept="image/*">
-    <button onclick="addProduct()">Add Product</button>
-  </section>
-
-  <hr>
-
-  <h3>✏️ Edit/Delete Products</h3>
-  <div id="productList"></div>
+<div class="admin-products-layout">
+    <!-- Left Panel: Add/Edit Product Form -->
+    <div class="product-form-panel">
+      <h3 id="formTitle">➕ Add Product</h3>
+      <input type="hidden" id="editProductId" value="">
+      
+      <div class="form-group">
+        <label for="pname">Product Name</label>
+        <input id="pname" placeholder="Enter product name">
+      </div>
+      
+      <div class="form-group">
+        <label for="price">Price (₹)</label>
+        <input id="price" type="number" placeholder="Enter price">
+      </div>
+      
+      <div class="form-group">
+        <label for="category">Collection</label>
+        <select id="category">
+          <option value="">Select Collection</option>
+          <option value="mens">Men's Collection</option>
+          <option value="womens">Women's Collection</option>
+          <option value="kids">Kids Collection</option>
+          <option value="fancy">Fancy Items</option>
+          <option value="new">New Arrivals</option>
+        </select>
+      </div>
+      
+      <div class="form-group">
+        <label for="stock">Stock Quantity</label>
+        <input id="stock" type="number" placeholder="Enter stock quantity">
+      </div>
+      
+      <div class="form-group">
+        <label>Product Image</label>
+        <input id="imageFile" type="file" accept="image/*">
+      </div>
+      
+      <div class="divider">— OR —</div>
+      
+      <div class="form-group">
+        <label>Image URL</label>
+        <input id="imageUrl" placeholder="Google Drive link or any URL">
+      </div>
+      
+      <button onclick="saveProduct()" id="saveBtn">Add Product</button>
+      <button onclick="clearForm()" class="secondary" style="margin-top: 8px;">Clear Form</button>
+    </div>
+    
+    <!-- Right Panel: Product List -->
+    <div class="product-list-panel">
+      <h3>📦 Product List</h3>
+      <div id="productList"></div>
+  </div>
 
   <script type="module">
     import { checkAdminAccess } from "../admin-js/auth.js";
     import { auth } from "../js/firebase.js";
 
-    // Check admin access and hide add section for support role
+    // Check admin access and hide for support role
     (async () => {
       const role = await checkAdminAccess();
       if (role === 'support') {
-        const section = document.getElementById('addProductSection');
-        if (section) section.remove();
+        const panel = document.querySelector('.product-form-panel');
+        if (panel) panel.remove();
       }
     })();
 
@@ -53,4 +271,3 @@
   <script type="module" src="../admin-js/admin-products.js"></script>
 </body>
 </html>
-

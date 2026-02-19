@@ -5,6 +5,141 @@
   <meta name="viewport" content="width=device-width,initial-scale=1">
   <title>Vogant Fashions/Login</title>
   <link rel="stylesheet" href="../css/style.css">
+  <style>
+    .login-page {
+      min-height: 80vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+    }
+    
+    .login-card {
+      max-width: 420px;
+      width: 100%;
+      padding: 40px;
+      background: #fff;
+      border-radius: 16px;
+      box-shadow: var(--shadow);
+    }
+    
+    .login-card h2 {
+      text-align: center;
+      margin-bottom: 8px;
+      color: var(--accent);
+    }
+    
+    .login-card .subtitle {
+      text-align: center;
+      color: #6b7280;
+      margin-bottom: 32px;
+      font-size: 14px;
+    }
+    
+    .login-card .form-group {
+      margin-bottom: 20px;
+    }
+    
+    .login-card label {
+      display: block;
+      font-weight: 600;
+      font-size: 13px;
+      color: #374151;
+      margin-bottom: 6px;
+    }
+    
+    .login-card input {
+      width: 100%;
+      padding: 12px 16px;
+      border: 1px solid #d1d5db;
+      border-radius: 8px;
+      font-size: 15px;
+      transition: all 0.3s;
+      box-sizing: border-box;
+    }
+    
+    .login-card input:focus {
+      outline: none;
+      border-color: var(--accent);
+      box-shadow: 0 0 0 3px rgba(139, 29, 29, 0.1);
+    }
+    
+    .login-card .form-actions {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      margin-top: 24px;
+    }
+    
+    .login-card .form-actions button {
+      width: 100%;
+      padding: 14px;
+      font-size: 15px;
+      font-weight: 600;
+    }
+    
+    .login-card .form-footer {
+      text-align: center;
+      margin-top: 20px;
+    }
+    
+    .login-card .form-footer a {
+      color: var(--accent);
+      cursor: pointer;
+      font-size: 14px;
+    }
+    
+    .login-card .form-footer a:hover {
+      text-decoration: underline;
+    }
+    
+    #msg {
+      text-align: center;
+      margin-top: 16px;
+      padding: 12px;
+      border-radius: 8px;
+      font-size: 14px;
+      display: none;
+    }
+    
+    #msg.show {
+      display: block;
+    }
+    
+    #msg.success {
+      background: #d1fae5;
+      color: #065f46;
+    }
+    
+    #msg.error {
+      background: #fee2e2;
+      color: #991b1b;
+    }
+    
+    .divider {
+      text-align: center;
+      margin: 20px 0;
+      color: #9ca3af;
+      font-size: 13px;
+      position: relative;
+    }
+    
+    .divider::before {
+      content: '';
+      position: absolute;
+      left: 0;
+      top: 50%;
+      width: 100%;
+      height: 1px;
+      background: #e5e7eb;
+    }
+    
+    .divider span {
+      background: #fff;
+      padding: 0 12px;
+      position: relative;
+    }
+  </style>
 </head>
 <body>
   <!-- Header -->
@@ -26,29 +161,54 @@
     </div>
   </header>
 
-<div class="container">
-    <h2>Login / Sign Up</h2>
+  <div class="login-page">
     <div class="login-card">
+      <h2>👋 Welcome Back</h2>
+      <p class="subtitle">Login to your Vogant Fashions account</p>
+      
       <div class="form-group">
         <label for="email">Email Address</label>
         <input id="email" type="email" placeholder="Enter your email">
       </div>
+      
       <div class="form-group">
         <label for="password">Password</label>
         <input id="password" type="password" placeholder="Enter your password">
       </div>
+      
       <div class="form-actions">
         <button onclick="login()" class="btn-primary">Login</button>
-        <button onclick="signup()" class="btn-secondary">Sign Up</button>
+        <button onclick="signup()" class="btn-secondary">Create Account</button>
       </div>
+      
+      <div class="divider"><span>OR</span></div>
+      
       <div class="form-footer">
-        <a href="#" onclick="resetPassword()">Forgot Password?</a>
+        <a onclick="showForgotPassword()">Forgot Password? Reset here</a>
       </div>
+      
       <p id="msg"></p>
     </div>
   </div>
 
   <script type="module" src="../js/auth.js"></script>
+  <script>
+    // Override the show forgot password function in auth.js
+    window.showForgotPassword = function() {
+      const email = document.getElementById('email').value.trim();
+      if (!email) {
+        showMessage('Please enter your email address first', 'error');
+        return;
+      }
+      resetPassword(email);
+    };
+    
+    window.showMessage = function(text, type) {
+      const msgEl = document.getElementById('msg');
+      msgEl.textContent = text;
+      msgEl.className = 'show ' + type;
+    };
+  </script>
 </body>
 </html>
 

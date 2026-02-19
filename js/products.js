@@ -14,7 +14,52 @@ const sampleProducts = [
   { id: "sample-6", name: "Party Wear Gown", price: 3499, stock: 8, image: "https://images.unsplash.com/photo-1595777457583-95e059d581b8?w=400" }
 ];
 
+/* =======================
+   GOOGLE DRIVE IMAGE HELPER
+======================= */
+// Convert Google Drive share link to direct download URL
+function getGoogleDriveImageUrl(driveLink) {
+  if (!driveLink) return driveLink;
+  
+  // Check if it's a Google Drive link
+  if (driveLink.includes('drive.google.com')) {
+    // Extract file ID from different formats
+    let fileId = '';
+    
+    if (driveLink.includes('/file/d/')) {
+      // Format: https://drive.google.com/file/d/FILE_ID/view...
+      const match = driveLink.match(/\/file\/d\/([a-zA-Z0-9_-]+)/);
+      if (match) fileId = match[1];
+    } else if (driveLink.includes('?id=')) {
+      // Format: https://drive.google.com/u/0/uc?id=FILE_ID&export=download
+      const match = driveLink.match(/id=([a-zA-Z0-9_-]+)/);
+      if (match) fileId = match[1];
+    }
+    
+    if (fileId) {
+      // Return direct image link
+      return `https://drive.google.com/uc?export=download&id=${fileId}`;
+    }
+  }
+  
+  // Return as-is if not a Google Drive link
+  return driveLink;
+}
+
+// Get URL category from current page
+function getCurrentCategory() {
+  const path = window.location.pathname;
+  if (path.includes('mens.html')) return 'mens';
+  if (path.includes('womens.html')) return 'womens';
+  if (path.includes('kids.html')) return 'kids';
+  if (path.includes('fancyitems.html')) return 'fancy';
+  if (path.includes('newarrivals.html')) return 'new';
+  return null; // All products (index.html)
+}
+
 try{
+  const currentCategory = getCurrentCategory();
+  
   onSnapshot(collection(db,"products"), snap => {
     productBox.innerHTML = "";
     if(snap.empty){
@@ -22,14 +67,32 @@ try{
       return;
     }
 
+    let hasProducts = false;
+
     snap.forEach(doc => {
       const p = doc.data();
+      const productCategory = (p.category || '').toLowerCase().trim();
+      
+      // Filter by category if on a specific category page
+      if (currentCategory && productCategory !== currentCategory) {
+        return; // Skip this product
+      }
+      
+      hasProducts = true;
+      
+      // Convert Google Drive URL to direct URL if needed
+      const imageUrl = getGoogleDriveImageUrl(p.image);
+      
       const productDiv = document.createElement('div');
       productDiv.className = 'product';
       
       const img = document.createElement('img');
-      img.src = p.image || '';
+      img.src = imageUrl || '';
       img.alt = p.name || 'Product';
+      img.onerror = function() {
+        // Fallback image if Google Drive image fails
+        this.src = 'https://via.placeholder.com/400x400?text=No+Image';
+      };
       
       const name = document.createElement('h3');
       name.textContent = p.name || 'Unknown';
@@ -50,7 +113,7 @@ try{
         name: p.name,
         price: Number(p.price),
         stock: p.stock,
-        image: p.image || ''
+        image: imageUrl || ''
       });
       
       const actions = document.createElement('div');
@@ -64,6 +127,11 @@ try{
       productDiv.appendChild(actions);
       productBox.appendChild(productDiv);
     });
+    
+    // If no products in this category, show message
+    if (!hasProducts) {
+      productBox.innerHTML = '<p style="text-align:center;padding:40px;color:#666;">No products available in this category yet.</p>';
+    }
   });
 }catch(e){
   console.warn('Products snapshot failed, rendering sample products', e);
@@ -108,4 +176,7 @@ window.addToCart = function (product) {
 🧠 NOTE:
 - Any product added by admin appears here automatically
 - Sample products shown when Firebase is not connected
+- Products are filtered by category based on the page (mens, womens, kids, fancy, new)
+- Google Drive image links are automatically converted to direct image URLs
 */
+

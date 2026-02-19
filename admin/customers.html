@@ -3,12 +3,252 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width,initial-scale=1">
-  <title>Admin Dashboard</title>
+  <title>Admin - Customers</title>
   <link rel="stylesheet" href="../css/style.css">
-  <script type="module" src="../admin-js/dashboard-summary.js"></script>
-
+  <style>
+    .admin-layout {
+      display: flex;
+      gap: 24px;
+      margin-top: 20px;
+    }
+    
+    .customer-details-panel {
+      flex: 0 0 400px;
+      background: #fff;
+      padding: 24px;
+      border-radius: 12px;
+      box-shadow: var(--shadow);
+      height: fit-content;
+      position: sticky;
+      top: 20px;
+    }
+    
+    .customer-details-panel h3 {
+      margin-top: 0;
+      color: var(--accent);
+      margin-bottom: 20px;
+    }
+    
+    .customer-details-panel .detail-row {
+      margin-bottom: 16px;
+    }
+    
+    .customer-details-panel label {
+      display: block;
+      font-weight: 600;
+      font-size: 12px;
+      color: #6b7280;
+      margin-bottom: 4px;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+    
+    .customer-details-panel .detail-value {
+      font-size: 15px;
+      color: #111827;
+      font-weight: 500;
+      padding: 10px 12px;
+      background: #f9fafb;
+      border-radius: 8px;
+      border: 1px solid #e5e7eb;
+    }
+    
+    .customer-details-panel .verified-badge {
+      display: inline-block;
+      padding: 4px 12px;
+      border-radius: 12px;
+      font-size: 12px;
+      font-weight: 600;
+    }
+    
+    .verified-badge.yes {
+      background: #d1fae5;
+      color: #065f46;
+    }
+    
+    .verified-badge.no {
+      background: #fee2e2;
+      color: #991b1b;
+    }
+    
+    .detail-actions {
+      display: flex;
+      gap: 12px;
+      margin-top: 20px;
+      padding-top: 20px;
+      border-top: 1px solid #e5e7eb;
+    }
+    
+    .detail-actions button {
+      flex: 1;
+      padding: 12px;
+      font-size: 14px;
+    }
+    
+    .detail-actions .view-btn {
+      background: #3b82f6;
+    }
+    
+    .detail-actions .view-btn:hover {
+      background: #2563eb;
+    }
+    
+    .detail-actions .delete-btn {
+      background: #dc2626;
+    }
+    
+    .detail-actions .delete-btn:hover {
+      background: #b91c1c;
+    }
+    
+    .customer-list-panel {
+      flex: 1;
+      background: #fff;
+      padding: 20px;
+      border-radius: 12px;
+      box-shadow: var(--shadow);
+    }
+    
+    .customer-list-panel h3 {
+      margin-top: 0;
+      color: var(--accent);
+      margin-bottom: 16px;
+    }
+    
+    .customer-item {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      padding: 12px;
+      border: 1px solid #e5e7eb;
+      border-radius: 8px;
+      margin-bottom: 10px;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+    
+    .customer-item:hover {
+      border-color: var(--accent);
+      background: rgba(139, 29, 29, 0.03);
+    }
+    
+    .customer-item.selected {
+      border-color: var(--accent);
+      background: rgba(139, 29, 29, 0.08);
+    }
+    
+    .customer-avatar {
+      width: 48px;
+      height: 48px;
+      background: #8b5cf6;
+      color: #fff;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 20px;
+      font-weight: 600;
+      flex-shrink: 0;
+    }
+    
+    .customer-info {
+      flex: 1;
+      min-width: 0;
+    }
+    
+    .customer-info .email {
+      font-weight: 600;
+      color: #111827;
+      font-size: 14px;
+      word-break: break-all;
+    }
+    
+    .customer-info .details {
+      font-size: 12px;
+      color: #6b7280;
+      margin-top: 4px;
+    }
+    
+    .customer-info .verified-badge {
+      display: inline-block;
+      padding: 2px 8px;
+      border-radius: 12px;
+      font-size: 11px;
+      font-weight: 600;
+      margin-left: 8px;
+    }
+    
+    .customer-actions {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+      flex-shrink: 0;
+    }
+    
+    .customer-actions button {
+      padding: 6px 12px;
+      font-size: 12px;
+      white-space: nowrap;
+    }
+    
+    .customer-actions .view-btn {
+      background: #3b82f6;
+    }
+    
+    .customer-actions .view-btn:hover {
+      background: #2563eb;
+    }
+    
+    .empty-state {
+      text-align: center;
+      padding: 40px;
+      color: #6b7280;
+    }
+    
+    .empty-state .icon {
+      font-size: 48px;
+      margin-bottom: 12px;
+    }
+    
+    .info-box {
+      background: #f3f4f6;
+      padding: 12px;
+      border-radius: 8px;
+      margin-bottom: 16px;
+      font-size: 13px;
+      color: #6b7280;
+    }
+    
+    .info-box strong {
+      color: #374151;
+    }
+    
+    .placeholder-message {
+      text-align: center;
+      padding: 40px 20px;
+      color: #6b7280;
+    }
+    
+    .placeholder-message .icon {
+      font-size: 48px;
+      margin-bottom: 12px;
+    }
+    
+    @media (max-width: 900px) {
+      .admin-layout {
+        flex-direction: column;
+      }
+      
+      .customer-details-panel {
+        flex: none;
+        position: static;
+        order: -1;
+      }
+    }
+  </style>
 </head>
-<h2>Customers</h2>
+<body>
+  <h2>Customers</h2>
   <nav>
     <a href="dashboard.html">Home</a> |
     <a href="products.html">Products</a> |
@@ -19,20 +259,36 @@
     <a href="customer-orders.html">Customer Orders</a> |
     <a href="/public/index.html" id="logout">Logout</a>
   </nav>
+  
+<div class="admin-layout">
+    <!-- Left Panel: Customer Details -->
+    <div class="customer-details-panel">
+      <h3 id="formTitle">👤 Customer Details</h3>
+      
+      <div class="info-box">
+        <strong>Note:</strong> Customer data is synced from authentication. Click on a customer from the list to view all their details.
+      </div>
+      
+      <div id="customerDetails">
+        <div class="placeholder-message">
+          <div class="icon">👈</div>
+          <p>Select a customer from the list to view their details</p>
+        </div>
+    </div>
+    
+    <!-- Right Panel: Customer List -->
+    <div class="customer-list-panel">
+      <h3>📋 Customer List <span id="customerCount"></span></h3>
+      <div id="customerList"></div>
+  </div>
 
-<table border="1" cellpadding="8">
-  <thead>
-    <tr>
-      <th>Email</th>
-      <th>Registered On</th>
-      <th>Email Verified</th>
-    </tr>
-  </thead>
-  <tbody id="customers"></tbody>
-</table>
-
-<script type="module" src="../admin-js/customers.js"></script>
-<script type="module">
+  <script type="module" src="../admin-js/customers.js"></script>
+  <script type="module">
 import { checkAdminAccess } from "../admin-js/auth.js";
 checkAdminAccess().catch(()=>location.href="login.html");
-</script>
+
+import { auth } from "../js/firebase.js";
+document.getElementById('logout').addEventListener('click', () => auth.signOut());
+  </script>
+</body>
+</html>

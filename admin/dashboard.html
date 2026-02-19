@@ -65,4 +65,186 @@
   </div>
 
 </section>
+
+<!-- 📊 Collection Split View -->
+<section class="collection-stats">
+  <h3>📊 Collections Overview</h3>
+  <div class="collection-grid">
+    <div class="collection-card">
+      <div class="collection-icon">👔</div>
+      <div class="collection-info">
+        <h4>Men's Collection</h4>
+        <p class="collection-count"><span id="mensCount">0</span> Products</p>
+        <p class="collection-stock">Stock: <span id="mensStock">0</span></p>
+      </div>
+    </div>
+    
+    <div class="collection-card">
+      <div class="collection-icon">👗</div>
+      <div class="collection-info">
+        <h4>Women's Collection</h4>
+        <p class="collection-count"><span id="womensCount">0</span> Products</p>
+        <p class="collection-stock">Stock: <span id="womensStock">0</span></p>
+      </div>
+    </div>
+    
+    <div class="collection-card">
+      <div class="collection-icon">🆕</div>
+      <div class="collection-info">
+        <h4>New Arrivals</h4>
+        <p class="collection-count"><span id="newCount">0</span> Products</p>
+        <p class="collection-stock">Stock: <span id="newStock">0</span></p>
+      </div>
+    </div>
+    
+    <div class="collection-card">
+      <div class="collection-icon">🧸</div>
+      <div class="collection-info">
+        <h4>Kids Collection</h4>
+        <p class="collection-count"><span id="kidsCount">0</span> Products</p>
+        <p class="collection-stock">Stock: <span id="kidsStock">0</span></p>
+      </div>
+    </div>
+    
+    <div class="collection-card">
+      <div class="collection-icon">✨</div>
+      <div class="collection-info">
+        <h4>Fancy Items</h4>
+        <p class="collection-count"><span id="fancyCount">0</span> Products</p>
+        <p class="collection-stock">Stock: <span id="fancyStock">0</span></p>
+      </div>
+    </div>
+    
+    <div class="collection-card">
+      <div class="collection-icon">📦</div>
+      <div class="collection-info">
+        <h4>Other/All</h4>
+        <p class="collection-count"><span id="otherCount">0</span> Products</p>
+        <p class="collection-stock">Stock: <span id="otherStock">0</span></p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<script type="module">
+  import { db } from "../js/firebase.js";
+  import { collection, onSnapshot } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+  
+  // Collection stats
+  const collections = {
+    mens: { count: 0, stock: 0 },
+    womens: { count: 0, stock: 0 },
+    new: { count: 0, stock: 0 },
+    kids: { count: 0, stock: 0 },
+    fancy: { count: 0, stock: 0 },
+    other: { count: 0, stock: 0 }
+  };
+  
+  onSnapshot(collection(db, "products"), (snap) => {
+    // Reset counts
+    Object.keys(collections).forEach(key => {
+      collections[key].count = 0;
+      collections[key].stock = 0;
+    });
+    
+    snap.forEach(doc => {
+      const p = doc.data();
+      const category = (p.category || '').toLowerCase().trim();
+      
+      if (category === 'mens' || category === 'men' || category === 'male') {
+        collections.mens.count++;
+        collections.mens.stock += Number(p.stock || 0);
+      } else if (category === 'womens' || category === 'women' || category === 'female' || category === 'saree' || category === 'kurti') {
+        collections.womens.count++;
+        collections.womens.stock += Number(p.stock || 0);
+      } else if (category === 'new' || category === 'newarrivals' || category === 'new arrival') {
+        collections.new.count++;
+        collections.new.stock += Number(p.stock || 0);
+      } else if (category === 'kids' || category === 'kid' || category === 'children') {
+        collections.kids.count++;
+        collections.kids.stock += Number(p.stock || 0);
+      } else if (category === 'fancy' || category === 'fancy items') {
+        collections.fancy.count++;
+        collections.fancy.stock += Number(p.stock || 0);
+      } else {
+        collections.other.count++;
+        collections.other.stock += Number(p.stock || 0);
+      }
+    });
+    
+    // Update UI
+    document.getElementById('mensCount').textContent = collections.mens.count;
+    document.getElementById('mensStock').textContent = collections.mens.stock;
+    document.getElementById('womensCount').textContent = collections.womens.count;
+    document.getElementById('womensStock').textContent = collections.womens.stock;
+    document.getElementById('newCount').textContent = collections.new.count;
+    document.getElementById('newStock').textContent = collections.new.stock;
+    document.getElementById('kidsCount').textContent = collections.kids.count;
+    document.getElementById('kidsStock').textContent = collections.kids.stock;
+    document.getElementById('fancyCount').textContent = collections.fancy.count;
+    document.getElementById('fancyStock').textContent = collections.fancy.stock;
+    document.getElementById('otherCount').textContent = collections.other.count;
+    document.getElementById('otherStock').textContent = collections.other.stock;
+  });
+</script>
+
+<style>
+.collection-stats {
+  margin-top: 30px;
+  padding: 20px;
+}
+
+.collection-stats h3 {
+  margin-bottom: 20px;
+  color: var(--accent);
+}
+
+.collection-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 16px;
+}
+
+.collection-card {
+  background: #fff;
+  border-radius: 12px;
+  padding: 16px;
+  box-shadow: var(--shadow);
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  transition: transform 0.2s ease;
+}
+
+.collection-card:hover {
+  transform: translateY(-3px);
+}
+
+.collection-icon {
+  font-size: 32px;
+  background: var(--bg);
+  padding: 10px;
+  border-radius: 8px;
+}
+
+.collection-info h4 {
+  margin: 0 0 4px 0;
+  font-size: 14px;
+  color: #374151;
+}
+
+.collection-count {
+  margin: 0;
+  font-size: 18px;
+  font-weight: 700;
+  color: var(--accent);
+}
+
+.collection-stock {
+  margin: 4px 0 0 0;
+  font-size: 12px;
+  color: var(--muted);
+}
+</style>
+
 </body>

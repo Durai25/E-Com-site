@@ -1,0 +1,349 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Vogant Fashions/My Orders</title>
+  <link rel="stylesheet" href="../css/style.css">
+  <style>
+    .orders-page {
+      max-width: 900px;
+      margin: 0 auto;
+    }
+    
+    .orders-page h1 {
+      margin-bottom: 24px;
+      color: var(--accent);
+    }
+    
+    .order-card {
+      background: #fff;
+      border-radius: 12px;
+      box-shadow: var(--shadow);
+      margin-bottom: 20px;
+      overflow: hidden;
+    }
+    
+    .order-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 16px 20px;
+      background: #f9fafb;
+      border-bottom: 1px solid #e5e7eb;
+    }
+    
+    .order-info h3 {
+      margin: 0;
+      font-size: 16px;
+      color: #111827;
+    }
+    
+    .order-date {
+      margin: 4px 0 0 0;
+      font-size: 13px;
+      color: #6b7280;
+    }
+    
+    .order-status {
+      padding: 6px 14px;
+      border-radius: 20px;
+      font-size: 12px;
+      font-weight: 600;
+      text-transform: uppercase;
+    }
+    
+    .status-pending {
+      background: #fef3c7;
+      color: #92400e;
+    }
+    
+    .status-packed {
+      background: #dbeafe;
+      color: #1e40af;
+    }
+    
+    .status-shipped {
+      background: #e0e7ff;
+      color: #4338ca;
+    }
+    
+    .status-delivered {
+      background: #d1fae5;
+      color: #065f46;
+    }
+    
+    .order-items {
+      padding: 16px 20px;
+    }
+    
+    .order-item {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      padding: 12px 0;
+      border-bottom: 1px solid #f3f4f6;
+    }
+    
+    .order-item:last-child {
+      border-bottom: none;
+    }
+    
+    .order-item img {
+      width: 60px;
+      height: 60px;
+      object-fit: cover;
+      border-radius: 8px;
+      background: #f3f4f6;
+    }
+    
+    .item-details h4 {
+      margin: 0 0 4px 0;
+      font-size: 14px;
+      color: #111827;
+    }
+    
+    .item-details .price {
+      margin: 0;
+      font-size: 14px;
+      font-weight: 600;
+      color: var(--accent);
+    }
+    
+    .order-footer {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 16px 20px;
+      background: #f9fafb;
+      border-top: 1px solid #e5e7eb;
+    }
+    
+    .payment-status {
+      padding: 4px 10px;
+      border-radius: 12px;
+      font-size: 12px;
+      font-weight: 600;
+    }
+    
+    .payment-status.paid {
+      background: #d1fae5;
+      color: #065f46;
+    }
+    
+    .payment-status.pending {
+      background: #fee2e2;
+      color: #991b1b;
+    }
+    
+    .order-total {
+      text-align: right;
+    }
+    
+    .order-total span {
+      font-size: 13px;
+      color: #6b7280;
+    }
+    
+    .order-total strong {
+      display: block;
+      font-size: 18px;
+      color: var(--accent);
+    }
+    
+    .order-actions {
+      display: flex;
+      gap: 12px;
+      padding: 16px 20px;
+      border-top: 1px solid #e5e7eb;
+    }
+    
+    .order-actions button {
+      flex: 1;
+      padding: 10px;
+      font-size: 14px;
+    }
+    
+    .btn-outline {
+      background: transparent;
+      border: 2px solid var(--accent);
+      color: var(--accent);
+    }
+    
+    .btn-outline:hover {
+      background: var(--accent);
+      color: #fff;
+    }
+    
+    .empty-state {
+      text-align: center;
+      padding: 60px 20px;
+      background: #fff;
+      border-radius: 12px;
+      box-shadow: var(--shadow);
+    }
+    
+    .empty-state .icon {
+      font-size: 64px;
+      margin-bottom: 16px;
+    }
+    
+    .empty-state p {
+      color: #6b7280;
+      font-size: 16px;
+    }
+    
+    .empty-state .btn-primary {
+      display: inline-block;
+      margin-top: 16px;
+      padding: 12px 24px;
+      background: var(--accent);
+      color: #fff;
+      text-decoration: none;
+      border-radius: 8px;
+      font-weight: 600;
+    }
+    
+    .error-msg {
+      color: #dc2626;
+      font-size: 13px;
+      margin-top: 8px;
+    }
+    
+    .back-link {
+      display: inline-block;
+      margin-bottom: 16px;
+      color: var(--accent);
+      text-decoration: none;
+    }
+    
+    .back-link:hover {
+      text-decoration: underline;
+    }
+  </style>
+</head>
+<body>
+  <!-- Header -->
+  <header class="header">
+    <div class="header-top">
+      <a href="index.html" class="logo-link">
+        <img src="logo.png" alt="Store Logo" class="logo-img">
+        <div class="brand-text">
+          <span class="brand-tagline">Fashion Attract's</span>
+        </div>
+      </a>
+      <div class="header-actions">
+        <a href="cart.html" class="cart-btn">
+          <span class="cart-icon">🛒</span>
+          <span>Cart</span>
+        </a>
+        <a href="my-account.html" class="login-link">My Account</a>
+      </div>
+    </div>
+    <nav class="navbar">
+      <a href="newarrivals.html" data-category="new">New Arrivals</a>
+      <a href="mens.html" data-category="men">Mens Fashion</a>
+      <a href="womens.html" data-category="womens">Womens Fashion</a>
+      <a href="kids.html" data-category="kids">Kids Fashion</a>
+      <a href="fancyitems.html" data-category="fancy">Fancy Items</a>
+    </nav>
+  </header>
+
+  <main>
+    <div class="container">
+      <div class="orders-page">
+        <a href="my-account.html" class="back-link">← Back to My Account</a>
+        <h1>📦 My Orders</h1>
+        <div id="ordersContainer">
+          <div class="empty-state">
+            <div class="icon">⏳</div>
+            <p>Loading your orders...</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <!-- Footer -->
+  <footer class="footer">
+    <div class="footer-top">
+      <div class="footer-logo">
+        <h2>Vogant Fashions</h2>
+        <p class="trust-badge">⭐ Trusted by thousands of customers</p>
+      </div>
+      <div class="footer-columns">
+        <div class="footer-column">
+          <h4>Company</h4>
+          <ul>
+            <li><a href="#">About Us</a></li>
+            <li><a href="#">Our Story</a></li>
+            <li><a href="#">Privacy Policy</a></li>
+            <li><a href="#">Terms & Conditions</a></li>
+            <li><a href="#">Sitemap</a></li>
+          </ul>
+        </div>
+        <div class="footer-column">
+          <h4>Shop</h4>
+          <ul>
+            <li><a href="index.html">All Products</a></li>
+            <li><a href="mens.html">Men's Collection</a></li>
+            <li><a href="womens.html">Women's Collection</a></li>
+            <li><a href="kids.html">Kids Collection</a></li>
+            <li><a href="newarrivals.html">New Arrivals</a></li>
+          </ul>
+        </div>
+        <div class="footer-column">
+          <h4>Customer Service</h4>
+          <ul>
+            <li><a href="track.html">Track Order</a></li>
+            <li><a href="#">Contact Us</a></li>
+            <li><a href="#">Support Hub</a></li>
+            <li><a href="#">FAQs</a></li>
+            <li><a href="#">Returns</a></li>
+          </ul>
+        </div>
+        <div class="footer-column">
+          <h4>Connect With Us</h4>
+          <div class="social-links">
+            <a href="https://facebook.com" target="_blank">📘 Facebook</a>
+            <a href="https://instagram.com" target="_blank">📷 Instagram</a>
+            <a href="https://twitter.com" target="_blank">𝕏 Twitter</a>
+            <a href="https://wa.me/919944499333" target="_blank">💬 WhatsApp</a>
+          </div>
+          <div class="contact-info">
+            <p><strong>Email:</strong> <a href="mailto:vogantfashions@gmail.com">vogantfashions@gmail.com</a></p>
+            <p><strong>Phone:</strong> <a href="tel:+919944499333">+91 99444 99333</a></p>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="footer-divider"></div>
+    <div class="footer-badges">
+      <div class="badge">
+        <div class="badge-icon">🚚</div>
+        <div class="badge-text"><strong>Fast Shipping</strong><br>Worldwide Delivery</div>
+      </div>
+      <div class="badge">
+        <div class="badge-icon">🔒</div>
+        <div class="badge-text"><strong>100% Secure</strong><br>Safe Checkout</div>
+      </div>
+      <div class="badge">
+        <div class="badge-icon">🤝</div>
+        <div class="badge-text"><strong>24/7 Support</strong><br>Customer Care</div>
+      </div>
+      <div class="badge">
+        <div class="badge-icon">⭐</div>
+        <div class="badge-text"><strong>Premium Quality</strong><br>Authentic Products</div>
+      </div>
+    </div>
+    <div class="footer-divider"></div>
+    <div class="footer-bottom">
+      <p>&copy; 2026 Vogant Fashions. All rights reserved.</p>
+    </div>
+  </footer>
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+  <script type="module" src="my-orders.js"></script>
+</body>
+</html>
+
