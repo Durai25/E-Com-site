@@ -18,8 +18,7 @@ const firebaseConfig = {
   projectId: "saree-dhoti-ecommerce",
   storageBucket: "saree-dhoti-ecommerce.firebasestorage.app",
   messagingSenderId: "588900421752",
-  appId: "1:588900421752:web:e1f3db8403827beaab1d8d",
-  measurementId: "G-JN5CRYDKZW"
+  appId: "1:588900421752:web:e1f3db8403827beaab1d8d"
 };
 
 export const app = initializeApp(firebaseConfig);

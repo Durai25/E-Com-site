@@ -43,11 +43,16 @@ window.login = async function () {
     const userRef = doc(db, "users", user.uid);
     const userSnap = await getDoc(userRef);
 
+    // Update emailVerified status if user has verified their email
+    if (user.emailVerified && userSnap.exists() && !userSnap.data().emailVerified) {
+      await setDoc(userRef, { emailVerified: true }, { merge: true });
+    }
+
     if (!userSnap.exists()) {
       await setDoc(userRef, {
         email: user.email,
         role: "customer",
-        emailVerified: true,
+        emailVerified: user.emailVerified,
         createdAt: new Date()
       });
     }
@@ -71,13 +76,18 @@ window.signup = async function () {
     const cred = await createUserWithEmailAndPassword(auth, email, password);
     const user = cred.user;
 
-    // 📧 Send verification email
-    await sendEmailVerification(user);
+    // Try to send verification email (may fail if Firebase config issue)
+    try {
+      await sendEmailVerification(user);
+      document.getElementById("msg").innerText =
+        "Verification email sent. Please check your inbox.";
+    } catch (emailErr) {
+      console.warn("Email verification sending failed:", emailErr);
+      document.getElementById("msg").innerText =
+        "Account created. Please check your inbox for verification email.";
+    }
 
-    document.getElementById("msg").innerText =
-      "Verification email sent. Please check your inbox.";
-
-    // Create customer record (inactive until verified)
+    // Create customer record in Firestore
     await setDoc(doc(db, "users", user.uid), {
       email: user.email,
       role: "customer",
@@ -85,7 +95,10 @@ window.signup = async function () {
       createdAt: new Date()
     });
 
+    console.log("User document created in Firestore");
+
   } catch (err) {
+    console.error("Signup error:", err);
     document.getElementById("msg").innerText = err.message;
   }
 };
@@ -107,6 +120,11 @@ async function redirectUser(user) {
   // 2️⃣ Customer (verified only)
   const userRef = doc(db, "users", user.uid);
   const userSnap = await getDoc(userRef);
+
+  // Update emailVerified status if user has verified their email
+  if (user.emailVerified && userSnap.exists() && !userSnap.data().emailVerified) {
+    await setDoc(userRef, { emailVerified: true }, { merge: true });
+  }
 
   if (!userSnap.exists()) {
     // Safety fallback

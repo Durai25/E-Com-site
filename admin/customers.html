@@ -7,6 +7,73 @@
   <link rel="stylesheet" href="../css/style.css">
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
   <style>
+    /* Admin Header with Logo */
+    .admin-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 12px 24px;
+      background: #fff;
+      border-bottom: 1px solid #eee;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.04);
+    }
+
+    .admin-logo {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      text-decoration: none;
+    }
+
+    .admin-logo-img {
+      height: 45px;
+      width: auto;
+    }
+
+    .admin-brand {
+      display: flex;
+      flex-direction: column;
+    }
+
+    .admin-brand-name {
+      font-family: 'Playfair Display', Georgia, serif;
+      font-size: 22px;
+      font-weight: 900;
+      color: var(--accent);
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      line-height: 1.1;
+    }
+
+    .admin-brand-tagline {
+      font-size: 10px;
+      color: #6b7280;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      font-weight: 500;
+    }
+
+    .admin-nav-links {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .admin-nav-links a {
+      color: #111827;
+      font-weight: 600;
+      font-size: 13px;
+      transition: color 0.2s;
+      text-decoration: none;
+      padding: 6px 10px;
+      border-radius: 6px;
+    }
+
+    .admin-nav-links a:hover {
+      color: var(--accent);
+      background: rgba(139, 29, 29, 0.08);
+    }
+    
     :root {
       --accent: #8b1d1d;
       --accent-light: #a82a2a;
@@ -642,28 +709,6 @@
       font-size: 16px;
     }
 
-    /* Navigation */
-    nav {
-      display: flex;
-      align-items: center;
-      gap: 12px;
-      padding: 12px 18px;
-      background: #fff;
-      border-bottom: 1px solid #eee;
-      box-shadow: 0 2px 4px rgba(0,0,0,0.04);
-    }
-
-    nav a {
-      color: #111827;
-      font-weight: 600;
-      font-size: 14px;
-      transition: color 0.2s;
-    }
-
-    nav a:hover {
-      color: var(--accent);
-    }
-
     /* Responsive */
     @media (max-width: 1100px) {
       .main-content {
@@ -718,16 +763,26 @@
   </style>
 </head>
 <body>
-  <nav>
-    <a href="dashboard.html">Home</a> |
-    <a href="products.html">Products</a> |
-    <a href="orders.html">Orders</a> |
-    <a href="analytics.html">Analytics</a> |
-    <a href="manage-admins.html">Manage Admins</a> |
-    <a href="customers.html">Customers</a> |
-    <a href="customer-orders.html">Customer Orders</a> |
-    <a href="/public/index.html" id="logout">Logout</a>
-  </nav>
+  <!-- Admin Header with Logo -->
+  <header class="admin-header">
+    <a href="dashboard.html" class="admin-logo">
+      <img src="../public/logo.png" alt="VOGANT Logo" class="admin-logo-img">
+      <div class="admin-brand">
+        <span class="admin-brand-name">VOGANT</span>
+        <span class="admin-brand-tagline">Fashion Attract's</span>
+      </div>
+    </a>
+    <nav class="admin-nav-links">
+      <a href="dashboard.html">Home</a>
+      <a href="products.html">Products</a>
+      <a href="orders.html">Orders</a>
+      <a href="analytics.html">Analytics</a>
+      <a href="manage-admins.html">Manage Admins</a>
+      <a href="customers.html">Customers</a>
+      <a href="customer-orders.html">Customer Orders</a>
+      <a href="/public/index.html" id="logout" style="color: #dc2626;">Logout</a>
+    </nav>
+  </header>
 
   <!-- Page Header -->
   <div class="page-header">
