@@ -3,30 +3,283 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width,initial-scale=1">
-  <title>Analytics</title>
+  <title>Advanced Analytics</title>
   <link rel="stylesheet" href="../css/style.css">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <!-- Chart.js CDN -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <style>
+    :root {
+      --accent: #8b1d1d;
+      --accent-light: #a82a2a;
+      --bg-page: #f3f4f6;
+      --card-bg: #ffffff;
+      --text-primary: #111827;
+      --text-secondary: #6b7280;
+      --border-color: #e5e7eb;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Inter', ui-sans-serif, system-ui, -apple-system, sans-serif;
+      background: var(--bg-page);
+      color: var(--text-primary);
+      margin: 0;
+      padding: 0;
+      min-height: 100vh;
+    }
+
+    /* Navigation */
+    nav {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 12px 18px;
+      background: #fff;
+      border-bottom: 1px solid #eee;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.04);
+    }
+
+    nav a {
+      color: #111827;
+      font-weight: 600;
+      font-size: 14px;
+      transition: color 0.2s;
+      text-decoration: none;
+    }
+
+    nav a:hover {
+      color: var(--accent);
+    }
+
+    /* Page Header */
+    .page-header {
+      background: linear-gradient(135deg, var(--accent) 0%, var(--accent-light) 100%);
+      color: white;
+      padding: 24px 32px;
+      margin-bottom: 24px;
+    }
+
+    .page-header h2 {
+      margin: 0 0 8px 0;
+      font-size: 28px;
+      font-weight: 700;
+    }
+
+    .page-header p {
+      margin: 0;
+      opacity: 0.9;
+      font-size: 14px;
+    }
+  </style>
 </head>
 <body>
-  <h2>📊 Business Analytics</h2>
   <nav>
     <a href="dashboard.html">Home</a> |
     <a href="products.html">Products</a> |
     <a href="orders.html">Orders</a> |
     <a href="analytics.html">Analytics</a> |
     <a href="manage-admins.html">Manage Admins</a> |
-    <a href="customers.html">View Customers</a> |
+    <a href="customers.html">Customers</a> |
     <a href="customer-orders.html">Customer Orders</a> |
     <a href="/public/index.html" id="logout">Logout</a>
   </nav>
-  <div id="stats">
-    <p>Total Revenue: ₹<span id="revenue">0</span></p>
-    <p>Total Orders: <span id="ordersCount">0</span></p>
-    <p>Total GST: ₹<span id="gst">0</span></p>
+
+  <!-- Page Header -->
+  <div class="page-header">
+    <h2>📊 Advanced Business Analytics</h2>
+    <p>Insights and reports for your store</p>
   </div>
 
-  <h3>🔥 Best Selling Products</h3>
-  <ul id="topProducts"></ul>
+  <!-- Date Range Filter -->
+  <div class="analytics-filters">
+    <div class="filter-group">
+      <label>📅 Date Range:</label>
+      <select id="dateRange" onchange="handleDateRangeChange()">
+        <option value="all">All Time</option>
+        <option value="today">Today</option>
+        <option value="week">This Week</option>
+        <option value="month">This Month</option>
+        <option value="custom">Custom Range</option>
+      </select>
+    </div>
+    <div class="filter-group custom-dates" id="customDates" style="display: none;">
+      <input type="date" id="startDate">
+      <input type="date" id="endDate">
+      <button onclick="applyCustomDateRange()">Apply</button>
+    </div>
+    <div class="export-buttons">
+      <button class="export-btn export-csv" onclick="exportAnalytics('csv')">📥 Export CSV</button>
+      <button class="export-btn export-excel" onclick="exportAnalytics('excel')">📊 Export Excel</button>
+      <button class="export-btn export-pdf" onclick="exportAnalytics('pdf')">📄 Export PDF</button>
+    </div>
+  </div>
+
+  <!-- Summary Cards -->
+  <div class="analytics-cards">
+    <div class="analytics-card revenue">
+      <div class="card-icon">💰</div>
+      <div class="card-content">
+        <h4>Total Revenue</h4>
+        <p class="card-value">₹<span id="revenue">0</span></p>
+        <span class="card-change positive" id="revenueChange">+0%</span>
+      </div>
+    </div>
+    
+    <div class="analytics-card orders">
+      <div class="card-icon">🛍️</div>
+      <div class="card-content">
+        <h4>Total Orders</h4>
+        <p class="card-value"><span id="ordersCount">0</span></p>
+        <span class="card-change positive" id="ordersChange">+0%</span>
+      </div>
+    </div>
+    
+    <div class="analytics-card gst">
+      <div class="card-icon">📋</div>
+      <div class="card-content">
+        <h4>Total GST</h4>
+        <p class="card-value">₹<span id="gst">0</span></p>
+        <span class="card-change neutral">Fixed</span>
+      </div>
+    </div>
+    
+    <div class="analytics-card aov">
+      <div class="card-icon">📊</div>
+      <div class="card-content">
+        <h4>Avg Order Value</h4>
+        <p class="card-value">₹<span id="avgOrderValue">0</span></p>
+        <span class="card-change neutral">Per Order</span>
+      </div>
+    </div>
+    
+    <div class="analytics-card customers">
+      <div class="card-icon">👥</div>
+      <div class="card-content">
+        <h4>Total Customers</h4>
+        <p class="card-value"><span id="totalCustomers">0</span></p>
+        <span class="card-change positive" id="customersChange">+0%</span>
+      </div>
+    </div>
+    
+    <div class="analytics-card items">
+      <div class="card-icon">📦</div>
+      <div class="card-content">
+        <h4>Items Sold</h4>
+        <p class="card-value"><span id="itemsSold">0</span></p>
+        <span class="card-change positive" id="itemsChange">+0%</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- Charts Section -->
+  <div class="charts-grid">
+    <!-- Revenue Trend Chart -->
+    <div class="chart-container full-width">
+      <h3>📈 Revenue Trends</h3>
+      <canvas id="revenueChart"></canvas>
+    </div>
+    
+    <!-- Order Status Pie Chart -->
+    <div class="chart-container">
+      <h3>🍩 Order Status Distribution</h3>
+      <canvas id="orderStatusChart"></canvas>
+    </div>
+    
+    <!-- Category Performance Bar Chart -->
+    <div class="chart-container">
+      <h3>📊 Sales by Category</h3>
+      <canvas id="categoryChart"></canvas>
+    </div>
+  </div>
+
+  <!-- Top Products Section -->
+  <div class="analytics-section">
+    <h3>🔥 Top Selling Products</h3>
+    <div class="top-products-table-wrapper">
+      <table class="analytics-table" id="topProductsTable">
+        <thead>
+          <tr>
+            <th>Rank</th>
+            <th>Product</th>
+            <th>Category</th>
+            <th>Quantity Sold</th>
+            <th>Revenue</th>
+          </tr>
+        </thead>
+        <tbody id="topProductsBody">
+          <!-- Populated by JavaScript -->
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- Customer Analytics Section -->
+  <div class="analytics-section">
+    <h3>👥 Customer Analytics</h3>
+    <div class="customer-stats-grid">
+      <div class="customer-stat-card">
+        <h4>New Customers</h4>
+        <p class="stat-value"><span id="newCustomers">0</span></p>
+        <span class="stat-label">First time buyers</span>
+      </div>
+      <div class="customer-stat-card">
+        <h4>Returning Customers</h4>
+        <p class="stat-value"><span id="returningCustomers">0</span></p>
+        <span class="stat-label">Multiple orders</span>
+      </div>
+      <div class="customer-stat-card">
+        <h4>Repeat Rate</h4>
+        <p class="stat-value"><span id="repeatRate">0</span>%</p>
+        <span class="stat-label">Of total customers</span>
+      </div>
+      <div class="customer-stat-card">
+        <h4>Customer LTV</h4>
+        <p class="stat-value">₹<span id="customerLTV">0</span></p>
+        <span class="stat-label">Lifetime value</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- Payment Analytics -->
+  <div class="analytics-section">
+    <h3>💳 Payment Analytics</h3>
+    <div class="payment-stats-grid">
+      <div class="payment-stat-card">
+        <h4>COD Orders</h4>
+        <p class="stat-value"><span id="codOrders">0</span></p>
+        <span class="stat-label">Cash on Delivery</span>
+      </div>
+      <div class="payment-stat-card">
+        <h4>Online Paid</h4>
+        <p class="stat-value"><span id="onlineOrders">0</span></p>
+        <span class="stat-label">Online Payment</span>
+      </div>
+      <div class="payment-stat-card">
+        <h4>Pending Payments</h4>
+        <p class="stat-value"><span id="pendingPayments">0</span></p>
+        <span class="stat-label">Awaiting payment</span>
+      </div>
+      <div class="payment-stat-card">
+        <h4>Success Rate</h4>
+        <p class="stat-value"><span id="paymentSuccessRate">0</span>%</p>
+        <span class="stat-label">Payment completion</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- Low Stock Alert -->
+  <div class="analytics-section">
+    <h3>⚠️ Low Stock Alerts</h3>
+    <div class="low-stock-grid" id="lowStockAlerts">
+      <!-- Populated by JavaScript -->
+    </div>
+  </div>
 
   <script type="module" src="../admin-js/analytics.js"></script>
 </body>
-</html> 
+</html>
+

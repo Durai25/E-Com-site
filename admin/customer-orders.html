@@ -3,27 +3,508 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width,initial-scale=1">
-  <title>Customer Orders</title>
+  <title>Customer Orders - Admin</title>
   <link rel="stylesheet" href="../css/style.css">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --accent: #8b1d1d;
+      --accent-light: #a82a2a;
+      --bg-page: #f3f4f6;
+      --card-bg: #ffffff;
+      --text-primary: #111827;
+      --text-secondary: #6b7280;
+      --border-color: #e5e7eb;
+      --success: #10b981;
+      --success-bg: #d1fae5;
+      --danger: #ef4444;
+      --danger-bg: #fee2e2;
+      --warning: #f59e0b;
+      --info: #3b82f6;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Inter', ui-sans-serif, system-ui, -apple-system, sans-serif;
+      background: var(--bg-page);
+      color: var(--text-primary);
+      margin: 0;
+      padding: 0;
+      min-height: 100vh;
+    }
+
+    /* Page Header */
+    .page-header {
+      background: linear-gradient(135deg, var(--accent) 0%, var(--accent-light) 100%);
+      color: white;
+      padding: 24px 32px;
+      margin-bottom: 24px;
+    }
+
+    .page-header h2 {
+      margin: 0 0 8px 0;
+      font-size: 28px;
+      font-weight: 700;
+    }
+
+    .page-header p {
+      margin: 0;
+      opacity: 0.9;
+      font-size: 14px;
+    }
+
+    /* Main Content */
+    .main-content {
+      padding: 0 32px 32px;
+    }
+
+    /* Customer Info Banner */
+    .customer-banner {
+      background: var(--card-bg);
+      border-radius: 12px;
+      padding: 16px 20px;
+      margin-bottom: 20px;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.06);
+      display: flex;
+      align-items: center;
+      gap: 16px;
+    }
+
+    .customer-banner .avatar {
+      width: 48px;
+      height: 48px;
+      border-radius: 12px;
+      background: linear-gradient(135deg, var(--accent), var(--accent-light));
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: white;
+      font-size: 20px;
+      font-weight: 700;
+    }
+
+    .customer-banner .info h3 {
+      margin: 0;
+      font-size: 16px;
+      font-weight: 600;
+    }
+
+    .customer-banner .info p {
+      margin: 4px 0 0 0;
+      font-size: 13px;
+      color: var(--text-secondary);
+    }
+
+    /* Toolbar */
+    .toolbar {
+      background: var(--card-bg);
+      border-radius: 12px;
+      padding: 16px 20px;
+      margin-bottom: 20px;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.06);
+      display: flex;
+      gap: 16px;
+      align-items: center;
+      flex-wrap: wrap;
+    }
+
+    .search-box {
+      flex: 1;
+      min-width: 250px;
+      position: relative;
+    }
+
+    .search-box input {
+      width: 100%;
+      padding: 10px 16px 10px 42px;
+      border: 1px solid var(--border-color);
+      border-radius: 8px;
+      font-size: 14px;
+      transition: border-color 0.2s, box-shadow 0.2s;
+    }
+
+    .search-box input:focus {
+      outline: none;
+      border-color: var(--accent);
+      box-shadow: 0 0 0 3px rgba(139, 29, 29, 0.1);
+    }
+
+    .search-box::before {
+      content: "🔍";
+      position: absolute;
+      left: 14px;
+      top: 50%;
+      transform: translateY(-50%);
+      font-size: 16px;
+    }
+
+    .filter-select {
+      padding: 10px 16px;
+      border: 1px solid var(--border-color);
+      border-radius: 8px;
+      font-size: 14px;
+      background: white;
+      cursor: pointer;
+      min-width: 160px;
+    }
+
+    .filter-select:focus {
+      outline: none;
+      border-color: var(--accent);
+    }
+
+    /* Orders Table */
+    .orders-panel {
+      background: var(--card-bg);
+      border-radius: 12px;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.06);
+      overflow: hidden;
+    }
+
+    .panel-header {
+      padding: 16px 20px;
+      border-bottom: 1px solid var(--border-color);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .panel-header h3 {
+      margin: 0;
+      font-size: 16px;
+      font-weight: 600;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .order-count-badge {
+      background: var(--accent);
+      color: white;
+      padding: 2px 10px;
+      border-radius: 20px;
+      font-size: 12px;
+      font-weight: 600;
+    }
+
+    .orders-table-wrapper {
+      overflow-x: auto;
+    }
+
+    .orders-table {
+      width: 100%;
+      border-collapse: collapse;
+    }
+
+    .orders-table th {
+      background: #f9fafb;
+      padding: 12px 16px;
+      text-align: left;
+      font-size: 12px;
+      font-weight: 600;
+      color: var(--text-secondary);
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      border-bottom: 1px solid var(--border-color);
+    }
+
+    .orders-table td {
+      padding: 14px 16px;
+      font-size: 14px;
+      border-bottom: 1px solid var(--border-color);
+      vertical-align: middle;
+    }
+
+    .orders-table tr:hover {
+      background: rgba(139, 29, 29, 0.02);
+    }
+
+    .orders-table tr:last-child td {
+      border-bottom: none;
+    }
+
+    /* Order ID */
+    .order-id {
+      font-family: monospace;
+      font-size: 13px;
+      color: var(--text-secondary);
+    }
+
+    /* Status Badge */
+    .status-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 6px 12px;
+      border-radius: 20px;
+      font-size: 12px;
+      font-weight: 600;
+    }
+
+    .status-badge.pending {
+      background: #fef3c7;
+      color: #92400e;
+    }
+
+    .status-badge.packed {
+      background: #dbeafe;
+      color: #1e40af;
+    }
+
+    .status-badge.shipped {
+      background: #e0e7ff;
+      color: #4338ca;
+    }
+
+    .status-badge.delivered {
+      background: var(--success-bg);
+      color: #065f46;
+    }
+
+    /* Payment Badge */
+    .payment-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      padding: 4px 10px;
+      border-radius: 12px;
+      font-size: 12px;
+      font-weight: 500;
+    }
+
+    .payment-badge.paid {
+      background: var(--success-bg);
+      color: #065f46;
+    }
+
+    .payment-badge.pending {
+      background: var(--danger-bg);
+      color: #991b1b;
+    }
+
+    /* Status Select */
+    .status-select {
+      padding: 8px 12px;
+      border: 1px solid var(--border-color);
+      border-radius: 8px;
+      font-size: 13px;
+      background: white;
+      cursor: pointer;
+      min-width: 130px;
+    }
+
+    .status-select:focus {
+      outline: none;
+      border-color: var(--accent);
+    }
+
+    /* Action Buttons */
+    .action-buttons {
+      display: flex;
+      gap: 8px;
+    }
+
+    .btn-action {
+      padding: 8px 12px;
+      border: none;
+      border-radius: 6px;
+      font-size: 12px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.2s;
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+    }
+
+    .btn-view {
+      background: var(--info);
+      color: white;
+    }
+
+    .btn-view:hover {
+      background: #2563eb;
+    }
+
+    .btn-invoice {
+      background: var(--accent);
+      color: white;
+    }
+
+    .btn-invoice:hover {
+      background: var(--accent-light);
+    }
+
+    /* Empty State */
+    .empty-state {
+      text-align: center;
+      padding: 60px 20px;
+      color: var(--text-secondary);
+    }
+
+    .empty-state .icon {
+      font-size: 64px;
+      margin-bottom: 16px;
+      opacity: 0.5;
+    }
+
+    .empty-state h3 {
+      margin: 0 0 8px 0;
+      font-size: 18px;
+      color: var(--text-primary);
+    }
+
+    .empty-state p {
+      margin: 0;
+      font-size: 14px;
+    }
+
+    /* Navigation */
+    nav {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 12px 18px;
+      background: #fff;
+      border-bottom: 1px solid #eee;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.04);
+    }
+
+    nav a {
+      color: #111827;
+      font-weight: 600;
+      font-size: 14px;
+      transition: color 0.2s;
+    }
+
+    nav a:hover {
+      color: var(--accent);
+    }
+
+    /* Responsive */
+    @media (max-width: 900px) {
+      .orders-table th:nth-child(5),
+      .orders-table td:nth-child(5) {
+        display: none;
+      }
+    }
+
+    @media (max-width: 600px) {
+      .page-header {
+        padding: 20px;
+      }
+
+      .main-content {
+        padding: 0 16px 24px;
+      }
+
+      .toolbar {
+        flex-direction: column;
+        align-items: stretch;
+      }
+
+      .search-box {
+        min-width: 100%;
+      }
+
+      .filter-select {
+        width: 100%;
+      }
+
+      .orders-table th:nth-child(4),
+      .orders-table td:nth-child(4) {
+        display: none;
+      }
+    }
+  </style>
 </head>
 <body>
-  <h2>📊 Customer Orders</h2>
   <nav>
     <a href="dashboard.html">Home</a> |
     <a href="products.html">Products</a> |
     <a href="orders.html">Orders</a> |
     <a href="analytics.html">Analytics</a> |
     <a href="manage-admins.html">Manage Admins</a> |
-    <a href="customers.html">View Customers</a> |
+    <a href="customers.html">Customers</a> |
     <a href="customer-orders.html">Customer Orders</a> |
     <a href="/public/index.html" id="logout">Logout</a>
   </nav>
-<p id="customerEmail"></p>
 
-<div id="orders"></div>
+  <!-- Page Header -->
+  <div class="page-header">
+    <h2>📦 Customer Orders</h2>
+    <p>View and manage orders for specific customers</p>
+  </div>
 
-<script type="module" src="../admin-js/customer-orders.js"></script>
-<script type="module">
+  <div class="main-content">
+    <!-- Customer Banner -->
+    <div class="customer-banner">
+      <div class="avatar" id="customerAvatar">👤</div>
+      <div class="info">
+        <h3 id="customerName">Customer Orders</h3>
+        <p id="customerEmail">Loading customer info...</p>
+      </div>
+    </div>
+
+    <!-- Toolbar -->
+    <div class="toolbar">
+      <div class="search-box">
+        <input type="text" id="searchInput" placeholder="Search by Order ID...">
+      </div>
+      <select class="filter-select" id="filterSelect">
+        <option value="all">All Status</option>
+        <option value="Pending">Pending</option>
+        <option value="Packed">Packed</option>
+        <option value="Shipped">Shipped</option>
+        <option value="Delivered">Delivered</option>
+      </select>
+    </div>
+
+    <!-- Orders Panel -->
+    <div class="orders-panel">
+      <div class="panel-header">
+        <h3>🛒 Orders List <span class="order-count-badge" id="orderCount">0</span></h3>
+      </div>
+
+      <div class="orders-table-wrapper">
+        <table class="orders-table">
+          <thead>
+            <tr>
+              <th>Order ID</th>
+              <th>Date</th>
+              <th>Items</th>
+              <th>Total</th>
+              <th>Status</th>
+              <th>Payment</th>
+              <th>Actions</th>
+            </tr>
+          </thead>
+          <tbody id="ordersTableBody">
+            <tr>
+              <td colspan="7" style="text-align: center; padding: 40px;">
+                <div class="empty-state">
+                  <div class="icon">⏳</div>
+                  <p>Loading orders...</p>
+                </div>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <script type="module" src="../admin-js/customer-orders.js"></script>
+  <script type="module">
 import { checkAdminAccess } from "../admin-js/auth.js";
 checkAdminAccess().catch(()=>location.href="login.html");
-</script>
+
+import { auth } from "../js/firebase.js";
+document.getElementById('logout').addEventListener('click', () => auth.signOut());
+  </script>
+</body>
+</html>
+
