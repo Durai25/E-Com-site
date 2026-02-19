@@ -17,19 +17,33 @@
         </div>
       </a>
       <div class="header-actions">
+        <a href="cart.html" class="cart-btn">
+          <span class="cart-icon">🛒</span>
+          <span>Cart</span>
+        </a>
+        <a href="login.html" class="login-link">Login</a>
       </div>
     </div>
   </header>
 
-  <div class="container">
+<div class="container">
     <h2>Login / Sign Up</h2>
-    <div class="card" style="max-width: 400px; margin: 0 auto;">
-      <input id="email" placeholder="Email" type="email">
-      <input id="password" type="password" placeholder="Password">
-      <button onclick="login()">Login</button>
-      <button onclick="signup()" class="secondary">Sign Up</button>
-      <br><br>
-      <a href="#" onclick="resetPassword()">Forgot Password?</a>
+    <div class="login-card">
+      <div class="form-group">
+        <label for="email">Email Address</label>
+        <input id="email" type="email" placeholder="Enter your email">
+      </div>
+      <div class="form-group">
+        <label for="password">Password</label>
+        <input id="password" type="password" placeholder="Enter your password">
+      </div>
+      <div class="form-actions">
+        <button onclick="login()" class="btn-primary">Login</button>
+        <button onclick="signup()" class="btn-secondary">Sign Up</button>
+      </div>
+      <div class="form-footer">
+        <a href="#" onclick="resetPassword()">Forgot Password?</a>
+      </div>
       <p id="msg"></p>
     </div>
   </div>
